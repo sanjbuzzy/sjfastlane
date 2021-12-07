@@ -1,0 +1,15 @@
+#app_identifier(ENV["APP_IDENTIFIER"]) # The bundle identifier of your app
+#apple_id(ENV["APPLE_ID"]) # Your Apple email address
+
+#itc_team_id(ENV["APP_STORE_TEAM_ID"]) # App Store Connect Team ID
+#team_id(ENV["DEVELOPER_TEAM_ID"]) # Developer Portal Team ID
+
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/#appfile
+
+app_identifier("buzz.buzzy.my1") # The bundle identifier of your app
+apple_id("dev@buzzy-buzz.com") # Your Apple email address
+
+itc_team_id("105534889") # App Store Connect Team ID
+team_id("F3NNAE9SBU") # Developer Portal Team ID
+package_name("buzz.buzzy.my1")

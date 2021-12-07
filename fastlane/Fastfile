@@ -1,0 +1,172 @@
+opt_out_usage
+#update_fastlane
+PROJECT_NAME = "buzzy_rn"
+XCODE_PROJECT = "./ios/#{PROJECT_NAME}.xcodeproj"
+XCODE_WORKSPACE = "./ios/#{PROJECT_NAME}.xcworkspace"
+OUTPUT_DIRECTORY = "./fastlane/build"
+IPA_DIRECTORY = "#{OUTPUT_DIRECTORY}/#{PROJECT_NAME}.ipa"
+#TESTERS_FILE = "./fastlane/testers.txt"
+BUILD_FOR_DEVELOPMENT_ONLY = false # true = Build for Development | false = Build to create a release
+BUILD_ONLY = true
+#xcode_select("/Applications/Xcode_11.3.1.app")
+
+#default_platform(:ios)
+
+platform :ios do
+
+  private_lane :build do
+    configuration_name = "Release"
+    export_options_method = "app-store"
+    code_sign_identity = "Apple Distribution"
+    MY_APP_ID = "buzz.buzzy.my1"
+    DEV_PROFILE = "match Development buzz.buzzy.my1"
+    RELE_PROFILE = "match AppStore buzz.buzzy.my1"                    
+    MY_TEAM = "F3NNAE9SBU"
+    #xcode_select("/Applications/Xcode_11.3.1.app")
+
+    #increment_version_number(
+    #xcodeproj: XCODE_PROJECT,
+    #bump_type: "patch" # Automatically increment patch version number#
+    #)
+        
+    increment_build_number(xcodeproj: XCODE_PROJECT)    
+    #commit_version_bump(message: 'Bump version', force: true)
+
+    create_keychain(
+      name: ENV["CI_KEYCHAIN_NAME"],
+      password: ENV["CI_KEYCHAIN_PASSWORD"],
+      default_keychain: true,
+      unlock: true,
+      timeout: 3600,
+      lock_when_sleeps: false
+    )
+    
+    match(
+      app_identifier: ENV["APP_IDENTIFIER"],
+      git_url: ENV["GIT_REPO_URL"],
+      type: "appstore",
+      username: "dev@buzzy-buzz.com",
+      team_id: "F3NNAE9SBU",
+      keychain_name: ENV["CI_KEYCHAIN_NAME"],
+      keychain_password: ENV["CI_KEYCHAIN_PASSWORD"],
+      readonly: true
+    )    
+    
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      path: XCODE_PROJECT,
+      code_sign_identity: code_sign_identity,
+      bundle_identifier: MY_APP_ID,
+      profile_name: "match AppStore buzz.buzzy.my1"
+    )
+   
+    settings_to_override = {
+      :BUNDLE_IDENTIFIER => MY_APP_ID,
+      :PROVISIONING_PROFILE_SPECIFIER => RELE_PROFILE,
+      :DEVELOPMENT_TEAM => MY_TEAM
+    }    
+   
+    gym(
+      scheme: PROJECT_NAME,
+      workspace: XCODE_WORKSPACE,
+      silent: true,
+      configuration: configuration_name,
+      xcargs: settings_to_override,
+      #xcargs: "ASSETCATALOG_COMPILER_APPICON_NAME=./ios/Images.xcassets/",
+      #xcargs: '#{settings_to_override} -UseNewBuildSystem=YES',
+      output_directory: OUTPUT_DIRECTORY,
+      output_name: "#{PROJECT_NAME}.ipa",
+      clean: true,
+      export_method: "app-store",
+      skip_profile_detection: true, 
+       export_options: {        
+        compileBitcode:false,
+        signingStyle: "manual",
+        provisioningProfiles: {
+            "buzz.buzzy.my1" => "match AppStore buzz.buzzy.my1",
+        }
+      }
+    )
+    
+    pilot(
+        username: "dev@buzzy-buzz.com",
+        app_identifier: "buzz.buzzy.my1",
+        apple_id: "954176500",
+        team_id: "105534889",
+        ipa: "/Users/runner/work/buzzy_rn/buzzy_rn/fastlane/build/buzzy_rn.ipa",
+        skip_waiting_for_build_processing: true
+        #skip_waiting_for_build_processing: false,
+        #distribute_external: true,
+        #changelog: "Bug fixes and new features",
+        #groups: ["External Testers"],
+        #notify_external_testers: true
+        )  
+    clean_build_artifacts      
+   end     
+  
+  desc "Create Signed IPA Build"
+  lane :beta do
+    build  
+    
+  end
+
+end  
+
+#default_platform(:android)
+platform :android do
+    
+    lane :IncrementVersionName do
+        
+        android_get_version_name(
+        gradle_file: "/home/runner/work/buzzy_rn/buzzy_rn/android/app/build.gradle" 
+        )
+        android_set_version_name(
+        gradle_file: "/home/runner/work/buzzy_rn/buzzy_rn/android/app/build.gradle" 
+        )
+    end
+    lane :IncrementBuildNumber do
+
+        path = '/home/runner/work/buzzy_rn/buzzy_rn/android/app/build.gradle'
+        #path = '../android/app/build.gradle'
+        re = /versionCode\s+(\d+)/
+        s = File.read(path)
+        versionCode = s[re, 1].to_i
+        s[re, 1] = (versionCode + 1).to_s
+        f = File.new(path, 'w')
+        f.write(s)
+        f.close           
+    end
+
+    lane :beta do
+        store_password = ENV["KEYSTORE_STORE_PASSWORD"]
+        key_password = ENV["KEYSTORE_KEY_PASSWORD"]
+        releaseFilePath = "/home/runner/work/buzzy_rn/buzzy_rn/.github/google_settings/ANDROID.keystore"
+        # Clean the build directory 
+        gradle(
+        task: "clean",
+        project_dir: "android/",
+        print_command_output: false
+        )
+        gradle(
+        task: 'bundle',
+        build_type: 'Release',
+        project_dir: "android/",
+        print_command: false,
+        properties: {
+            "android.injected.signing.store.file" => releaseFilePath,
+            "android.injected.signing.store.password" => store_password,
+            "android.injected.signing.key.alias" => "buzzy",
+            "android.injected.signing.key.password" => key_password,
+        }
+        )
+        upload_to_play_store(
+        package_name: 'buzz.buzzy.my1',
+        track: 'internal',
+        json_key: "/home/runner/work/buzzy_rn/buzzy_rn/.github/google_settings/google-private-key.json"
+        )
+        clean_build_artifacts
+        #git_add(path: "/home/runner/work/buzzy_rn/buzzy_rn/android/app/build.gradle")
+        #git_commit(path: "/home/runner/work/buzzy_rn/buzzy_rn/android/app/build.gradle", message: "Android Version Up by CI")
+        #push_to_git_remote
+    end
+end
