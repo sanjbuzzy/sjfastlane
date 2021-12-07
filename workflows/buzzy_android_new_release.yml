@@ -1,7 +1,7 @@
-name: BUZZY ANDROID NEW RELEASE
+name: ediris ANDROID NEW RELEASE
 on:
   repository_dispatch:
-    types: [Buzzy Android New Release]
+    types: [ediris Android New Release]
 
 jobs:
   build:
@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           token: ${{ secrets.ACTION_AUTH }}
-          ref: ${{ github.event.client_payload.branch || 'buzzy-app-deployment' }}
+          ref: ${{ github.event.client_payload.branch || 'ediris-app-deployment' }}
           fetch-depth: 0
 
       - name: Decrypt keystore and Google Credential

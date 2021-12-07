@@ -1,6 +1,6 @@
 opt_out_usage
 #update_fastlane
-PROJECT_NAME = "buzzy_rn"
+PROJECT_NAME = "ediris_rn"
 XCODE_PROJECT = "./ios/#{PROJECT_NAME}.xcodeproj"
 XCODE_WORKSPACE = "./ios/#{PROJECT_NAME}.xcworkspace"
 OUTPUT_DIRECTORY = "./fastlane/build"
@@ -18,9 +18,9 @@ platform :ios do
     configuration_name = "Release"
     export_options_method = "app-store"
     code_sign_identity = "Apple Distribution"
-    MY_APP_ID = "buzz.buzzy.my1"
-    DEV_PROFILE = "match Development buzz.buzzy.my1"
-    RELE_PROFILE = "match AppStore buzz.buzzy.my1"                    
+    MY_APP_ID = "test.ediris.my1"
+    DEV_PROFILE = "match Development test.ediris.my1"
+    RELE_PROFILE = "match AppStore test.ediris.my1"                    
     MY_TEAM = "F3NNAE9SBU"
     #xcode_select("/Applications/Xcode_11.3.1.app")
 
@@ -45,7 +45,7 @@ platform :ios do
       app_identifier: ENV["APP_IDENTIFIER"],
       git_url: ENV["GIT_REPO_URL"],
       type: "appstore",
-      username: "dev@buzzy-buzz.com",
+      username: "dev@ediris-test.com",
       team_id: "F3NNAE9SBU",
       keychain_name: ENV["CI_KEYCHAIN_NAME"],
       keychain_password: ENV["CI_KEYCHAIN_PASSWORD"],
@@ -57,7 +57,7 @@ platform :ios do
       path: XCODE_PROJECT,
       code_sign_identity: code_sign_identity,
       bundle_identifier: MY_APP_ID,
-      profile_name: "match AppStore buzz.buzzy.my1"
+      profile_name: "match AppStore test.ediris.my1"
     )
    
     settings_to_override = {
@@ -83,17 +83,17 @@ platform :ios do
         compileBitcode:false,
         signingStyle: "manual",
         provisioningProfiles: {
-            "buzz.buzzy.my1" => "match AppStore buzz.buzzy.my1",
+            "test.ediris.my1" => "match AppStore test.ediris.my1",
         }
       }
     )
     
     pilot(
-        username: "dev@buzzy-buzz.com",
-        app_identifier: "buzz.buzzy.my1",
+        username: "dev@ediris-test.com",
+        app_identifier: "test.ediris.my1",
         apple_id: "954176500",
         team_id: "105534889",
-        ipa: "/Users/runner/work/buzzy_rn/buzzy_rn/fastlane/build/buzzy_rn.ipa",
+        ipa: "/Users/runner/work/ediris_rn/ediris_rn/fastlane/build/ediris_rn.ipa",
         skip_waiting_for_build_processing: true
         #skip_waiting_for_build_processing: false,
         #distribute_external: true,
@@ -118,15 +118,15 @@ platform :android do
     lane :IncrementVersionName do
         
         android_get_version_name(
-        gradle_file: "/home/runner/work/buzzy_rn/buzzy_rn/android/app/build.gradle" 
+        gradle_file: "/home/runner/work/ediris_rn/ediris_rn/android/app/build.gradle" 
         )
         android_set_version_name(
-        gradle_file: "/home/runner/work/buzzy_rn/buzzy_rn/android/app/build.gradle" 
+        gradle_file: "/home/runner/work/ediris_rn/ediris_rn/android/app/build.gradle" 
         )
     end
     lane :IncrementBuildNumber do
 
-        path = '/home/runner/work/buzzy_rn/buzzy_rn/android/app/build.gradle'
+        path = '/home/runner/work/ediris_rn/ediris_rn/android/app/build.gradle'
         #path = '../android/app/build.gradle'
         re = /versionCode\s+(\d+)/
         s = File.read(path)
@@ -140,7 +140,7 @@ platform :android do
     lane :beta do
         store_password = ENV["KEYSTORE_STORE_PASSWORD"]
         key_password = ENV["KEYSTORE_KEY_PASSWORD"]
-        releaseFilePath = "/home/runner/work/buzzy_rn/buzzy_rn/.github/google_settings/ANDROID.keystore"
+        releaseFilePath = "/home/runner/work/ediris_rn/ediris_rn/.github/google_settings/ANDROID.keystore"
         # Clean the build directory 
         gradle(
         task: "clean",
@@ -155,18 +155,18 @@ platform :android do
         properties: {
             "android.injected.signing.store.file" => releaseFilePath,
             "android.injected.signing.store.password" => store_password,
-            "android.injected.signing.key.alias" => "buzzy",
+            "android.injected.signing.key.alias" => "ediris",
             "android.injected.signing.key.password" => key_password,
         }
         )
         upload_to_play_store(
-        package_name: 'buzz.buzzy.my1',
+        package_name: 'test.ediris.my1',
         track: 'internal',
-        json_key: "/home/runner/work/buzzy_rn/buzzy_rn/.github/google_settings/google-private-key.json"
+        json_key: "/home/runner/work/ediris_rn/ediris_rn/.github/google_settings/google-private-key.json"
         )
         clean_build_artifacts
-        #git_add(path: "/home/runner/work/buzzy_rn/buzzy_rn/android/app/build.gradle")
-        #git_commit(path: "/home/runner/work/buzzy_rn/buzzy_rn/android/app/build.gradle", message: "Android Version Up by CI")
+        #git_add(path: "/home/runner/work/ediris_rn/ediris_rn/android/app/build.gradle")
+        #git_commit(path: "/home/runner/work/ediris_rn/ediris_rn/android/app/build.gradle", message: "Android Version Up by CI")
         #push_to_git_remote
     end
 end

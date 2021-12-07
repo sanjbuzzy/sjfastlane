@@ -1,7 +1,7 @@
-name: Buzzy_Android_CI_V2
+name: ediris_Android_CI_V2
 on:
   repository_dispatch:
-    types: [Buzzy Android App]
+    types: [ediris Android App]
 
 jobs:
   build:
@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           token: ${{ secrets.ACTIONS_AUTH }}
-          ref: ${{ github.event.client_payload.branch || 'buzzy-app-deployment' }}
+          ref: ${{ github.event.client_payload.branch || 'ediris-app-deployment' }}
           fetch-depth: 0
 
       - name: Decrypt keystore and Google Credential

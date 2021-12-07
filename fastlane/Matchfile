@@ -1,14 +1,14 @@
-git_url("https://github.com/Buzzy-Buzz/fastlane_sigh.git")
+git_url("https://github.com/ediris-test/fastlane_sigh.git")
 
 storage_mode("git")
 
 #type("appstore") # The default type, can be: appstore, adhoc, enterprise or development
 type("development") # The default type, can be: appstore, adhoc, enterprise or development
 
-app_identifier(["buzz.buzzy.my1"])
-username("dev@buzzy-buzz.com") # Your Apple Developer Portal username
+app_identifier(["test.ediris.my1"])
+username("dev@ediris-test.com") # Your Apple Developer Portal username
 team_id('F3NNAE9SBU')
-team_name('Buzzy Buzz Pty Ltd')
+team_name('ediris test Pty Ltd')
 # For all available options run `fastlane match --help`
 # Remove the # in the beginning of the line to enable the other options
 

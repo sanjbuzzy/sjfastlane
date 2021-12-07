@@ -1,7 +1,7 @@
-name: BUZZY_IOS_CI_v2
+name: ediris_IOS_CI_v2
 on:
   repository_dispatch:
-    types: [Buzzy IOS App]
+    types: [ediris IOS App]
 
       
 jobs:
@@ -12,7 +12,7 @@ jobs:
     - uses: actions/checkout@v2
       with:
         token: ${{ secrets.ACTIONS_AUTH }}
-        ref: ${{ github.event.client_payload.branch || 'buzzy-app-deployment' }}
+        ref: ${{ github.event.client_payload.branch || 'ediris-app-deployment' }}
         fetch-depth: 0
 
     - name: Install dependencies
@@ -42,12 +42,12 @@ jobs:
 
     - name: Commit changes
       run: |
-          git config --global user.name 'buzzydevops'
-          git config --global user.email 'devops@buzzy.buzz'
-          git pull origin buzzy-app-deployment
+          git config --global user.name 'edirisdevops'
+          git config --global user.email 'devops@ediris.test'
+          git pull origin ediris-app-deployment
           git add -A
           git commit -m "Bump up iOS build number by CI"
-          git push origin buzzy-app-deployment    
+          git push origin ediris-app-deployment    
 
   sendmail:  
     name: Send Mail 
@@ -61,4 +61,4 @@ jobs:
       uses: peter-evans/sendgrid-action@v1
       env:
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
-          SCRIPT_FILEPATH: ./.github/google_settings/scripts/sendgrid_buzzyios.js  
+          SCRIPT_FILEPATH: ./.github/google_settings/scripts/sendgrid_edirisios.js  
